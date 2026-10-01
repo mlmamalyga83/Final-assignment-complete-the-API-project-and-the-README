@@ -11,6 +11,19 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
+// @title           Todo API
+// @version         1.0.0
+// @description     REST API для управления задачами (Todos) и пользователями (Users).
+// @description     Поддерживает полный CRUD для обеих сущностей.
+// @termsOfService  https://opensource.org/licenses/MIT
+// @contact.name    Netology AI-Assist Team
+// @contact.email   support@netology.ru
+// @license.name    MIT
+// @license.url     https://opensource.org/licenses/MIT
+// @host            localhost:8080
+// @BasePath        /api/v1
+// @accept          json
+// @produce         json
 func main() {
 	r := chi.NewRouter()
 

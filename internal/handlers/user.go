@@ -26,6 +26,14 @@ func NewUserHandler() *UserHandler {
 	}
 }
 
+// ListUsers godoc
+// @Summary      List all users
+// @Description  Returns a list of all registered users
+// @Tags         users
+// @Produce      json
+// @Success      200  {array}   models.User  "List of users"
+// @Failure      500  {object}  models.ErrorResponse  "Internal server error"
+// @Router       /users [get]
 func (h *UserHandler) ListUsers(w http.ResponseWriter, r *http.Request) {
 	h.mu.RLock()
 	defer h.mu.RUnlock()
@@ -43,6 +51,16 @@ func (h *UserHandler) ListUsers(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// GetUser godoc
+// @Summary      Get a user by ID
+// @Description  Returns a single user by their ID
+// @Tags         users
+// @Produce      json
+// @Param        id   path      int   true  "User ID"
+// @Success      200  {object}  models.User  "User found"
+// @Failure      400  {object}  models.ErrorResponse  "Invalid ID"
+// @Failure      404  {object}  models.ErrorResponse  "User not found"
+// @Router       /users/{id} [get]
 func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
@@ -68,6 +86,16 @@ func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// CreateUser godoc
+// @Summary      Create a new user
+// @Description  Creates a new user with the provided email and name
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        request  body  models.CreateUserRequest  true  "User data"
+// @Success      201  {object}  models.User  "User created"
+// @Failure      400  {object}  models.ErrorResponse  "Invalid request"
+// @Router       /users [post]
 func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var req models.CreateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -96,6 +124,18 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// UpdateUser godoc
+// @Summary      Update an existing user
+// @Description  Updates a user by their ID. Both email and name are optional.
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        id       path  int                      true  "User ID"
+// @Param        request  body  models.UpdateUserRequest  true  "Updated user data"
+// @Success      200  {object}  models.User  "User updated"
+// @Failure      400  {object}  models.ErrorResponse  "Invalid ID or request"
+// @Failure      404  {object}  models.ErrorResponse  "User not found"
+// @Router       /users/{id} [put]
 func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
@@ -136,6 +176,16 @@ func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// DeleteUser godoc
+// @Summary      Delete a user
+// @Description  Deletes a user by their ID
+// @Tags         users
+// @Produce      json
+// @Param        id   path  int  true  "User ID"
+// @Success      204  "User deleted"
+// @Failure      400  {object}  models.ErrorResponse  "Invalid ID"
+// @Failure      404  {object}  models.ErrorResponse  "User not found"
+// @Router       /users/{id} [delete]
 func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)

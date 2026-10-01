@@ -24,6 +24,14 @@ func NewTodoHandler() *TodoHandler {
 	}
 }
 
+// ListTodos godoc
+// @Summary      List all tasks
+// @Description  Returns a list of all tasks
+// @Tags         todos
+// @Produce      json
+// @Success      200  {array}   models.Todo  "List of tasks"
+// @Failure      500  {object}  models.ErrorResponse  "Internal server error"
+// @Router       /todos [get]
 func (h *TodoHandler) ListTodos(w http.ResponseWriter, r *http.Request) {
 	var todos []models.Todo
 	for _, todo := range h.todos {
@@ -38,6 +46,16 @@ func (h *TodoHandler) ListTodos(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// GetTodo godoc
+// @Summary      Get a task by ID
+// @Description  Returns a single task by its ID
+// @Tags         todos
+// @Produce      json
+// @Param        id   path      int   true  "Task ID"
+// @Success      200  {object}  models.Todo  "Task found"
+// @Failure      400  {object}  models.ErrorResponse  "Invalid ID"
+// @Failure      404  {object}  models.ErrorResponse  "Task not found"
+// @Router       /todos/{id} [get]
 func (h *TodoHandler) GetTodo(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
@@ -60,6 +78,16 @@ func (h *TodoHandler) GetTodo(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// CreateTodo godoc
+// @Summary      Create a new task
+// @Description  Creates a new task with the provided data
+// @Tags         todos
+// @Accept       json
+// @Produce      json
+// @Param        request  body  models.CreateTodoRequest  true  "Task data"
+// @Success      201  {object}  models.Todo  "Task created"
+// @Failure      400  {object}  models.ErrorResponse  "Invalid request"
+// @Router       /todos [post]
 func (h *TodoHandler) CreateTodo(w http.ResponseWriter, r *http.Request) {
 	var req models.CreateTodoRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -89,6 +117,18 @@ func (h *TodoHandler) CreateTodo(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// UpdateTodo godoc
+// @Summary      Update an existing task
+// @Description  Updates a task by its ID. All fields are optional.
+// @Tags         todos
+// @Accept       json
+// @Produce      json
+// @Param        id       path  int                      true  "Task ID"
+// @Param        request  body  models.UpdateTodoRequest  true  "Updated task data"
+// @Success      200  {object}  models.Todo  "Task updated"
+// @Failure      400  {object}  models.ErrorResponse  "Invalid ID or request"
+// @Failure      404  {object}  models.ErrorResponse  "Task not found"
+// @Router       /todos/{id} [put]
 func (h *TodoHandler) UpdateTodo(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
@@ -130,6 +170,16 @@ func (h *TodoHandler) UpdateTodo(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// DeleteTodo godoc
+// @Summary      Delete a task
+// @Description  Deletes a task by its ID
+// @Tags         todos
+// @Produce      json
+// @Param        id   path  int  true  "Task ID"
+// @Success      204  "Task deleted"
+// @Failure      400  {object}  models.ErrorResponse  "Invalid ID"
+// @Failure      404  {object}  models.ErrorResponse  "Task not found"
+// @Router       /todos/{id} [delete]
 func (h *TodoHandler) DeleteTodo(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
