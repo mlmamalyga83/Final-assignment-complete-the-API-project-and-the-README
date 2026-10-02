@@ -34,16 +34,24 @@
       "get": {
         "tags": ["users"],
         "summary": "List all users",
-        "description": "Returns a list of all registered users",
+        "description": "Returns a list of all registered users wrapped in SuccessResponse",
         "operationId": "ListUsers",
         "produces": ["application/json"],
         "responses": {
           "200": {
             "description": "List of users",
             "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/User"
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/User"
+                  }
+                }
               }
             }
           },
@@ -77,7 +85,15 @@
           "201": {
             "description": "User created",
             "schema": {
-              "$ref": "#/definitions/User"
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "data": {
+                  "$ref": "#/definitions/User"
+                }
+              }
             }
           },
           "400": {
@@ -93,7 +109,7 @@
       "get": {
         "tags": ["users"],
         "summary": "Get a user by ID",
-        "description": "Returns a single user by their ID",
+        "description": "Returns a single user by their ID wrapped in SuccessResponse",
         "operationId": "GetUser",
         "produces": ["application/json"],
         "parameters": [
@@ -110,7 +126,15 @@
           "200": {
             "description": "User found",
             "schema": {
-              "$ref": "#/definitions/User"
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "data": {
+                  "$ref": "#/definitions/User"
+                }
+              }
             }
           },
           "400": {
@@ -157,7 +181,15 @@
           "200": {
             "description": "User updated",
             "schema": {
-              "$ref": "#/definitions/User"
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "data": {
+                  "$ref": "#/definitions/User"
+                }
+              }
             }
           },
           "400": {
@@ -213,16 +245,24 @@
       "get": {
         "tags": ["todos"],
         "summary": "List all tasks",
-        "description": "Returns a list of all tasks",
+        "description": "Returns a list of all tasks wrapped in SuccessResponse",
         "operationId": "ListTodos",
         "produces": ["application/json"],
         "responses": {
           "200": {
             "description": "List of tasks",
             "schema": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Todo"
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Todo"
+                  }
+                }
               }
             }
           },
@@ -256,7 +296,15 @@
           "201": {
             "description": "Task created",
             "schema": {
-              "$ref": "#/definitions/Todo"
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "data": {
+                  "$ref": "#/definitions/Todo"
+                }
+              }
             }
           },
           "400": {
@@ -272,7 +320,7 @@
       "get": {
         "tags": ["todos"],
         "summary": "Get a task by ID",
-        "description": "Returns a single task by its ID",
+        "description": "Returns a single task by its ID wrapped in SuccessResponse",
         "operationId": "GetTodo",
         "produces": ["application/json"],
         "parameters": [
@@ -289,7 +337,15 @@
           "200": {
             "description": "Task found",
             "schema": {
-              "$ref": "#/definitions/Todo"
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "data": {
+                  "$ref": "#/definitions/Todo"
+                }
+              }
             }
           },
           "400": {
@@ -336,7 +392,15 @@
           "200": {
             "description": "Task updated",
             "schema": {
-              "$ref": "#/definitions/Todo"
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean"
+                },
+                "data": {
+                  "$ref": "#/definitions/Todo"
+                }
+              }
             }
           },
           "400": {

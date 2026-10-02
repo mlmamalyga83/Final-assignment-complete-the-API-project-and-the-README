@@ -244,10 +244,46 @@ curl -X POST http://localhost:8080/api/v1/todos \
 curl http://localhost:8080/api/v1/todos
 ```
 
+**Ответ (200):**
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "user_id": 1,
+      "title": "Buy groceries",
+      "description": "Milk, bread, eggs",
+      "done": false,
+      "created_at": "2026-10-01T15:00:00Z",
+      "updated_at": "2026-10-01T15:00:00Z"
+    }
+  ]
+}
+```
+
 #### Получить задачу по ID
 
 ```bash
 curl http://localhost:8080/api/v1/todos/1
+```
+
+**Ответ (200):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "user_id": 1,
+    "title": "Buy groceries",
+    "description": "Milk, bread, eggs",
+    "done": false,
+    "created_at": "2026-10-01T15:00:00Z",
+    "updated_at": "2026-10-01T15:00:00Z"
+  }
+}
 ```
 
 #### Обновить задачу
@@ -258,10 +294,44 @@ curl -X PUT http://localhost:8080/api/v1/todos/1 \
   -d '{"done": true}'
 ```
 
+**Ответ (200):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "user_id": 1,
+    "title": "Buy groceries",
+    "description": "Milk, bread, eggs",
+    "done": true,
+    "created_at": "2026-10-01T15:00:00Z",
+    "updated_at": "2026-10-01T15:00:00Z"
+  }
+}
+```
+
 #### Удалить задачу
 
 ```bash
 curl -X DELETE http://localhost:8080/api/v1/todos/1
+```
+
+**Ответ: 204 No Content**
+
+#### Ошибка: задача не найдена
+
+```bash
+curl http://localhost:8080/api/v1/todos/999
+```
+
+**Ответ (404):**
+
+```json
+{
+  "error": "404",
+  "message": "Задача не найдена"
+}
 ```
 
 ## Чек-лист

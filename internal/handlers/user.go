@@ -28,10 +28,10 @@ func NewUserHandler() *UserHandler {
 
 // ListUsers godoc
 // @Summary      List all users
-// @Description  Returns a list of all registered users
+// @Description  Returns a list of all registered users wrapped in SuccessResponse
 // @Tags         users
 // @Produce      json
-// @Success      200  {array}   models.User  "List of users"
+// @Success      200  {object}  models.SuccessResponse{data=[]models.User}  "List of users"
 // @Failure      500  {object}  models.ErrorResponse  "Internal server error"
 // @Router       /users [get]
 func (h *UserHandler) ListUsers(w http.ResponseWriter, r *http.Request) {
@@ -53,11 +53,11 @@ func (h *UserHandler) ListUsers(w http.ResponseWriter, r *http.Request) {
 
 // GetUser godoc
 // @Summary      Get a user by ID
-// @Description  Returns a single user by their ID
+// @Description  Returns a single user by their ID wrapped in SuccessResponse
 // @Tags         users
 // @Produce      json
 // @Param        id   path      int   true  "User ID"
-// @Success      200  {object}  models.User  "User found"
+// @Success      200  {object}  models.SuccessResponse{data=models.User}  "User found"
 // @Failure      400  {object}  models.ErrorResponse  "Invalid ID"
 // @Failure      404  {object}  models.ErrorResponse  "User not found"
 // @Router       /users/{id} [get]
@@ -65,7 +65,12 @@ func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "Неверный ID", http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
+			Error:   "400",
+			Message: "Неверный ID",
+		})
 		return
 	}
 
@@ -74,7 +79,12 @@ func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	h.mu.RUnlock()
 
 	if !exists {
-		http.Error(w, "Пользователь не найден", http.StatusNotFound)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
+			Error:   "404",
+			Message: "Пользователь не найден",
+		})
 		return
 	}
 
@@ -93,13 +103,18 @@ func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Param        request  body  models.CreateUserRequest  true  "User data"
-// @Success      201  {object}  models.User  "User created"
+// @Success      201  {object}  models.SuccessResponse{data=models.User}  "User created"
 // @Failure      400  {object}  models.ErrorResponse  "Invalid request"
 // @Router       /users [post]
 func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var req models.CreateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Невалидный запрос", http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
+			Error:   "400",
+			Message: "Невалидный запрос",
+		})
 		return
 	}
 
@@ -132,7 +147,7 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        id       path  int                      true  "User ID"
 // @Param        request  body  models.UpdateUserRequest  true  "Updated user data"
-// @Success      200  {object}  models.User  "User updated"
+// @Success      200  {object}  models.SuccessResponse{data=models.User}  "User updated"
 // @Failure      400  {object}  models.ErrorResponse  "Invalid ID or request"
 // @Failure      404  {object}  models.ErrorResponse  "User not found"
 // @Router       /users/{id} [put]
@@ -140,13 +155,23 @@ func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "Неверный ID", http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
+			Error:   "400",
+			Message: "Неверный ID",
+		})
 		return
 	}
 
 	var req models.UpdateUserRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Невалидный запрос", http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
+			Error:   "400",
+			Message: "Невалидный запрос",
+		})
 		return
 	}
 
@@ -155,7 +180,12 @@ func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	user, exists := h.users[id]
 	if !exists {
-		http.Error(w, "Пользователь не найден", http.StatusNotFound)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
+			Error:   "404",
+			Message: "Пользователь не найден",
+		})
 		return
 	}
 
@@ -190,7 +220,12 @@ func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "Неверный ID", http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
+			Error:   "400",
+			Message: "Неверный ID",
+		})
 		return
 	}
 
@@ -198,7 +233,12 @@ func (h *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	defer h.mu.Unlock()
 
 	if _, exists := h.users[id]; !exists {
-		http.Error(w, "Пользователь не найден", http.StatusNotFound)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
+			Error:   "404",
+			Message: "Пользователь не найден",
+		})
 		return
 	}
 

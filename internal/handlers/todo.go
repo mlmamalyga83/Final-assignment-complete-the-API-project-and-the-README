@@ -26,10 +26,10 @@ func NewTodoHandler() *TodoHandler {
 
 // ListTodos godoc
 // @Summary      List all tasks
-// @Description  Returns a list of all tasks
+// @Description  Returns a list of all tasks wrapped in SuccessResponse
 // @Tags         todos
 // @Produce      json
-// @Success      200  {array}   models.Todo  "List of tasks"
+// @Success      200  {object}  models.SuccessResponse{data=[]models.Todo}  "List of tasks"
 // @Failure      500  {object}  models.ErrorResponse  "Internal server error"
 // @Router       /todos [get]
 func (h *TodoHandler) ListTodos(w http.ResponseWriter, r *http.Request) {
@@ -48,11 +48,11 @@ func (h *TodoHandler) ListTodos(w http.ResponseWriter, r *http.Request) {
 
 // GetTodo godoc
 // @Summary      Get a task by ID
-// @Description  Returns a single task by its ID
+// @Description  Returns a single task by its ID wrapped in SuccessResponse
 // @Tags         todos
 // @Produce      json
 // @Param        id   path      int   true  "Task ID"
-// @Success      200  {object}  models.Todo  "Task found"
+// @Success      200  {object}  models.SuccessResponse{data=models.Todo}  "Task found"
 // @Failure      400  {object}  models.ErrorResponse  "Invalid ID"
 // @Failure      404  {object}  models.ErrorResponse  "Task not found"
 // @Router       /todos/{id} [get]
@@ -60,13 +60,23 @@ func (h *TodoHandler) GetTodo(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "Неверный ID", http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
+			Error:   "400",
+			Message: "Неверный ID",
+		})
 		return
 	}
 
 	todo, exists := h.todos[id]
 	if !exists {
-		http.Error(w, "Задача не найдена", http.StatusNotFound)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
+			Error:   "404",
+			Message: "Задача не найдена",
+		})
 		return
 	}
 
@@ -85,13 +95,18 @@ func (h *TodoHandler) GetTodo(w http.ResponseWriter, r *http.Request) {
 // @Accept       json
 // @Produce      json
 // @Param        request  body  models.CreateTodoRequest  true  "Task data"
-// @Success      201  {object}  models.Todo  "Task created"
+// @Success      201  {object}  models.SuccessResponse{data=models.Todo}  "Task created"
 // @Failure      400  {object}  models.ErrorResponse  "Invalid request"
 // @Router       /todos [post]
 func (h *TodoHandler) CreateTodo(w http.ResponseWriter, r *http.Request) {
 	var req models.CreateTodoRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Невалидный запрос", http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
+			Error:   "400",
+			Message: "Невалидный запрос",
+		})
 		return
 	}
 
@@ -125,7 +140,7 @@ func (h *TodoHandler) CreateTodo(w http.ResponseWriter, r *http.Request) {
 // @Produce      json
 // @Param        id       path  int                      true  "Task ID"
 // @Param        request  body  models.UpdateTodoRequest  true  "Updated task data"
-// @Success      200  {object}  models.Todo  "Task updated"
+// @Success      200  {object}  models.SuccessResponse{data=models.Todo}  "Task updated"
 // @Failure      400  {object}  models.ErrorResponse  "Invalid ID or request"
 // @Failure      404  {object}  models.ErrorResponse  "Task not found"
 // @Router       /todos/{id} [put]
@@ -133,19 +148,34 @@ func (h *TodoHandler) UpdateTodo(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "Неверный ID", http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
+			Error:   "400",
+			Message: "Неверный ID",
+		})
 		return
 	}
 
 	var req models.UpdateTodoRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Невалидный запрос", http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
+			Error:   "400",
+			Message: "Невалидный запрос",
+		})
 		return
 	}
 
 	todo, exists := h.todos[id]
 	if !exists {
-		http.Error(w, "Задача не найдена", http.StatusNotFound)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
+			Error:   "404",
+			Message: "Задача не найдена",
+		})
 		return
 	}
 
@@ -184,12 +214,22 @@ func (h *TodoHandler) DeleteTodo(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
-		http.Error(w, "Неверный ID", http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
+			Error:   "400",
+			Message: "Неверный ID",
+		})
 		return
 	}
 
 	if _, exists := h.todos[id]; !exists {
-		http.Error(w, "Задача не найдена", http.StatusNotFound)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
+			Error:   "404",
+			Message: "Задача не найдена",
+		})
 		return
 	}
 
