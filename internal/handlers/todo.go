@@ -110,6 +110,34 @@ func (h *TodoHandler) CreateTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if req.Title.len == 0 {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
+			Error:   "400",
+			Message: "Название задачи не может быть пустым",
+		})
+		return
+	}
+	if req.Title.len > 200 {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
+			Error:   "400",
+			Message: "Название задачи не может превышать 200 символов",
+		})
+		return
+	}
+	if req.Description.len > 1000 {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
+			Error:   "400",
+			Message: "Описание задачи не может превышать 1000 символов",
+		})
+		return
+	}
+
 	todo := models.Todo{
 		ID:          h.nextID,
 		UserID:      req.UserID,
@@ -164,6 +192,25 @@ func (h *TodoHandler) UpdateTodo(w http.ResponseWriter, r *http.Request) {
 		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
 			Error:   "400",
 			Message: "Невалидный запрос",
+		})
+		return
+	}
+
+	if req.Title != nil && req.Title.len > 200 {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
+			Error:   "400",
+			Message: "Название задачи не может превышать 200 символов",
+		})
+		return
+	}
+	if req.Description != nil && req.Description.len > 1000 {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
+			Error:   "400",
+			Message: "Описание задачи не может превышать 1000 символов",
 		})
 		return
 	}

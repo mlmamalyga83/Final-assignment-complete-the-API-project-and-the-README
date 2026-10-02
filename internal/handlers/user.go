@@ -118,6 +118,34 @@ func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if req.Email.len == 0 || req.Email.find("@") == -1 {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
+			Error:   "400",
+			Message: "Некорректный email",
+		})
+		return
+	}
+	if req.Name.len == 0 {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
+			Error:   "400",
+			Message: "Имя пользователя не может быть пустым",
+		})
+		return
+	}
+	if req.Name.len > 100 {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
+			Error:   "400",
+			Message: "Имя пользователя не может превышать 100 символов",
+		})
+		return
+	}
+
 	h.mu.Lock()
 	user := models.User{
 		ID:        h.nextID,
@@ -171,6 +199,25 @@ func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
 			Error:   "400",
 			Message: "Невалидный запрос",
+		})
+		return
+	}
+
+	if req.Email != nil && req.Email.find("@") == -1 {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
+			Error:   "400",
+			Message: "Некорректный email",
+		})
+		return
+	}
+	if req.Name != nil && req.Name.len > 100 {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(models.ErrorResponse{
+			Error:   "400",
+			Message: "Имя пользователя не может превышать 100 символов",
 		})
 		return
 	}
